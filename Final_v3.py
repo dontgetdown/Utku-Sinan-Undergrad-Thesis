@@ -21,9 +21,14 @@ while(cap.isOpened()):
             gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
             cars = car_cascade.detectMultiScale(
             gray,
+            #scaleFactor=1.1,
             scaleFactor=1.1,
+            #minNeighbors=8,
             minNeighbors=8,
             minSize=(25, 25))
+            #printing cars array for debuging purposes
+            print('cars: ', cars)
+
             
             #Canny edge detection     
             dst = cv2.Canny(src2, 225, 225, None, 3)
@@ -43,6 +48,8 @@ while(cap.isOpened()):
 
             #Hough line transform to find the lines in edge image
             linesP = cv2.HoughLinesP(masked_image, 1, np.pi / 180, 50, None, 50, 10)
+            #printint linesP array for debuging purposes
+            print('linesP: ', linesP)
 
             #Averaging and extrapolating the lines 
             result= draw_lane_lines(src2, lane_lines(src, linesP))
@@ -51,6 +58,9 @@ while(cap.isOpened()):
                   cv2.rectangle(result,(x,y),(x+w,y+h),(255,0,0),2)
             #Showing the result
             cv2.imshow('frame',result)
+            
+            #showing masked frame for debug purposed
+            cv2.imshow('debug0', masked_image)
             control+=1
             #Setting the result video frame break conditions
             
