@@ -1,9 +1,10 @@
 import cv2
 import numpy as np
-from functions import average_slope_intercept, pixel_points, lane_lines, draw_lane_lines, draw_middle_line, draw_position_line
+from functions import average_slope_intercept, pixel_points, lane_lines, draw_lane_lines, draw_middle_line, draw_position_line, find_angle
 
 #Capturing frames from video
 cap = cv2.VideoCapture('test.mp4')
+#cap = cv2.VideoCapture('../../d2.mp4')
 length = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 #Loading HAAR Cascade weight file
 car_cascade = cv2.CascadeClassifier('cars.xml')
@@ -46,10 +47,13 @@ while(cap.isOpened()):
 
             #Averaging and extrapolating the lines 
             result= draw_lane_lines(src2, lane_lines(src, linesP))
-            #Drawing the middle line
-            result= draw_middle_line(result, lane_lines(src, linesP))
-            #Drawing the position line
-            result= draw_position_line(result)
+            #Draw the middle line and get the middle line points
+            result, mid_line= draw_middle_line(result, lane_lines(src, linesP))
+            #Draw the position line and get the position line points
+            result, pos_line= draw_position_line(result)
+            #Calculate the angle between middle line and position line
+            result = find_angle(result, mid_line, pos_line) 
+            
             #Drawing rectangle on cars which were found by HAAR Cascade
             for (x,y,w,h) in cars:
                   cv2.rectangle(result,(x,y),(x+w,y+h),(255,0,0),2)
